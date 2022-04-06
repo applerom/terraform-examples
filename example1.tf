@@ -3,6 +3,6 @@ resource "aws_vpc" "main" {
   instance_tenancy = "default"
 
   tags = {
-    Name = "main2"
+    Name = "main324523"
   }
 }
