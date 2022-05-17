@@ -79,3 +79,14 @@ resource "aws_security_group" "webserver" {
         Name = "webserver"
     }
 }
+
+resource "aws_instance" "web1" {
+    ami = "${lookup(var.AMI, var.AWS_Region)}"
+    instance_type = "t4.micro"
+    # VPC
+    subnet_id = "${aws_subnet.subnet-public-1.id}"
+    # Security Group
+    vpc_security_group_ids = ["${aws_security_group.webserver.id}"]
+    # the Public SSH key
+    key_name = "key123"
+}
