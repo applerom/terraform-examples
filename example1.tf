@@ -82,7 +82,7 @@ resource "aws_security_group" "webserver" {
 
 resource "aws_instance" "web1" {
     ami = "${lookup(var.AMI, var.AWS_Region)}"
-    instance_type = "t4.micro"
+    instance_type = var.instance_type
     # VPC
     subnet_id = "${aws_subnet.subnet-public-1.id}"
     # Security Group

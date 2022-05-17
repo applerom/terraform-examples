@@ -9,3 +9,7 @@ variable "AMI" {
 variable "AWS_Region" {
     default = "eu-central-1"
 }
+
+variable "instance_type" {
+    default = "t4g.micro"
+}
