@@ -80,24 +80,25 @@ resource "aws_security_group" "webserver" {
     }
 }
 
-resource "aws_instance" "web1" {
-    ami = "${lookup(var.AMI, var.AWS_Region)}"
-    instance_type = var.instance_type
-    # VPC
-    subnet_id = "${aws_subnet.subnet-public-1.id}"
-    # Security Group
-    vpc_security_group_ids = ["${aws_security_group.webserver.id}"]
-    # the Public SSH key
-    key_name = "key123"
-}
-
-resource "aws_instance" "web2" {
-    ami = "${lookup(var.AMI, var.AWS_Region)}"
-    instance_type = var.instance_type
-    # VPC
-    subnet_id = "${aws_subnet.subnet-public-1.id}"
-    # Security Group
-    vpc_security_group_ids = ["${aws_security_group.webserver.id}"]
-    # the Public SSH key
-    key_name = "key123"
-}
+#resource "aws_instance" "web1" {
+#    ami = "${lookup(var.AMI, var.AWS_Region)}"
+#    instance_type = var.instance_type
+#    # VPC
+#    subnet_id = "${aws_subnet.subnet-public-1.id}"
+#    # Security Group
+#    vpc_security_group_ids = ["${aws_security_group.webserver.id}"]
+#    # the Public SSH key
+#    key_name = "key123"
+#}
+#
+#resource "aws_instance" "web2" {
+#    ami = "${lookup(var.AMI, var.AWS_Region)}"
+#    instance_type = var.instance_type
+#    # VPC
+#    subnet_id = "${aws_subnet.subnet-public-1.id}"
+#    # Security Group
+#    vpc_security_group_ids = ["${aws_security_group.webserver.id}"]
+#    # the Public SSH key
+#    key_name = "key123"
+#}
+#
