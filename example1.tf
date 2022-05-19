@@ -1,5 +1,5 @@
 resource "aws_vpc" "main" {
-  cidr_block       = "10.9.0.0/16"
+  cidr_block       = var.vpc_cidr_block
   instance_tenancy = "default"
 
   tags = {
@@ -9,11 +9,31 @@ resource "aws_vpc" "main" {
 
 resource "aws_subnet" "subnet-public-1" {
     vpc_id = "${aws_vpc.main.id}"
-    cidr_block = "10.9.1.0/24"
+    cidr_block = var.subnet_public_1_cidr_block
     map_public_ip_on_launch = "true" //it makes this a public subnet
-    availability_zone = "eu-central-1a"
+    availability_zone = var.subnet_public_1_availability_zone
     tags = {
         Name = "subnet-public-1"
+    }
+}
+
+resource "aws_subnet" "subnet-public-2" {
+    vpc_id = "${aws_vpc.main.id}"
+    cidr_block = var.subnet_public_2_cidr_block
+    map_public_ip_on_launch = "true" //it makes this a public subnet
+    availability_zone = var.subnet_public_2_availability_zone
+    tags = {
+        Name = "subnet-public-2"
+    }
+}
+
+resource "aws_subnet" "subnet-public-3" {
+    vpc_id = "${aws_vpc.main.id}"
+    cidr_block = var.subnet_public_3_cidr_block
+    map_public_ip_on_launch = "true" //it makes this a public subnet
+    availability_zone = var.subnet_public_3_availability_zone
+    tags = {
+        Name = "subnet-public-3"
     }
 }
 
@@ -29,7 +49,7 @@ resource "aws_route_table" "public-rt" {
     
     route {
         //associated subnet can reach everywhere
-        cidr_block = "0.0.0.0/0" 
+        cidr_block = "0.0.0.0/0"
         //CRT uses this IGW to reach internet
         gateway_id = "${aws_internet_gateway.igw.id}" 
     }
@@ -88,7 +108,7 @@ resource "aws_security_group" "webserver" {
 #    # Security Group
 #    vpc_security_group_ids = ["${aws_security_group.webserver.id}"]
 #    # the Public SSH key
-#    key_name = "key123"
+#    key_name = var.web1_key_name
 #}
 #
 #resource "aws_instance" "web2" {
@@ -99,6 +119,5 @@ resource "aws_security_group" "webserver" {
 #    # Security Group
 #    vpc_security_group_ids = ["${aws_security_group.webserver.id}"]
 #    # the Public SSH key
-#    key_name = "key123"
+#    key_name = var.web2_key_name
 #}
-#
