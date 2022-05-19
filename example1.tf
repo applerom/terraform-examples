@@ -8,8 +8,8 @@ resource "aws_vpc" "main" {
   }
 }
 
-resource "aws_subnet" "subnet-public" {
-    for_each = var.availability_zones
+resource "aws_subnet" "subnet_public" {
+    for_each = var.public_subnets
 
     vpc_id = "${aws_vpc.main.id}"
 
@@ -20,7 +20,23 @@ resource "aws_subnet" "subnet-public" {
     map_public_ip_on_launch = "true" //it makes this a public subnet
 
     tags = {
-        Name = "subnet-public"
+        Name = "subnet-public-${each.value}"
+    }
+}
+
+resource "aws_subnet" "subnet_private" {
+    for_each = var.public_subnets
+
+    vpc_id = "${aws_vpc.main.id}"
+
+    availability_zone = each.key
+    cidr_block        = cidrsubnet(aws_vpc.main.cidr_block, 8, each.value)
+    ipv6_cidr_block   = cidrsubnet(aws_vpc.main.ipv6_cidr_block, 8, each.value)
+
+    map_public_ip_on_launch = "true" //it makes this a public subnet
+
+    tags = {
+        Name = "subnet-public-${each.value}"
     }
 }
 
@@ -129,7 +145,7 @@ resource "aws_security_group" "webserver" {
 #    # Security Group
 #    vpc_security_group_ids = ["${aws_security_group.webserver.id}"]
 #    # the Public SSH key
-#    key_name = var.web1_key_name
+#    key_name = var.web_key_name
 #}
 #
 #resource "aws_instance" "web2" {
@@ -140,5 +156,5 @@ resource "aws_security_group" "webserver" {
 #    # Security Group
 #    vpc_security_group_ids = ["${aws_security_group.webserver.id}"]
 #    # the Public SSH key
-#    key_name = var.web2_key_name
+#    key_name = var.web_key_name
 #}

@@ -18,46 +18,22 @@ variable "vpc_cidr_block" {
     default = "10.9.0.0/16"
 }
 
-variable "subnet_public_1_cidr_block" {
-    default = "10.9.1.0/24"
-}
-
-variable "subnet_public_1_availability_zone" {
-    default = "eu-central-1a"
-}
-
-variable "availability_zones" { 
-#    azs =  { "eu-central-1a" : 0, "eu-central-1b" : 1, "eu-central-1c" : 2 }
-#    type = map
+variable "public_subnets" { 
     default = {
-        eu-central-1a = 0
-        eu-central-1b = 1
-        eu-central-1c = 2
+        eu-central-1a = 11
+        eu-central-1b = 12
+        eu-central-1c = 13
     }
 }
 
-
-
-variable "subnet_public_2_cidr_block" {
-    default = "10.9.2.0/24"
+variable "private_subnets" { 
+    default = {
+        eu-central-1a = 21
+        eu-central-1b = 22
+        eu-central-1c = 23
+    }
 }
 
-variable "subnet_public_2_availability_zone" {
-    default = "eu-central-1b"
-}
-
-variable "subnet_public_3_cidr_block" {
-    default = "10.9.3.0/24"
-}
-
-variable "subnet_public_3_availability_zone" {
-    default = "eu-central-1c"
-}
-
-variable "web1_key_name" {
-    default = "key123"
-}
-
-variable "web2_key_name" {
+variable "web_key_name" {
     default = "key123"
 }
