@@ -64,7 +64,7 @@ resource "aws_route_table" "public-rt" {
 }
 
 resource "aws_route_table_association" "rta-public-subnet"{
-    count = length(aws_subnet.availability_zones)
+    count = length(aws_subnet.subnet_public)
 
     subnet_id = aws_subnet.subnet-public[count.index].id
     route_table_id = "${aws_route_table.public-rt.id}"
