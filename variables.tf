@@ -26,6 +26,18 @@ variable "subnet_public_1_availability_zone" {
     default = "eu-central-1a"
 }
 
+variable "availability_zones" { 
+#    azs =  { "eu-central-1a" : 0, "eu-central-1b" : 1, "eu-central-1c" : 2 }
+#    type = map
+    default = {
+        eu-central-1a = 0
+        eu-central-1b = 1
+        eu-central-1c = 2
+    }
+}
+
+
+
 variable "subnet_public_2_cidr_block" {
     default = "10.9.2.0/24"
 }
