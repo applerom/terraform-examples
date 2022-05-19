@@ -15,7 +15,7 @@ resource "aws_subnet" "subnet_public" {
 
     availability_zone = each.key
     cidr_block        = cidrsubnet(aws_vpc.main.cidr_block, 8, each.value)
-    ipv6_cidr_block   = cidrsubnet(aws_vpc.main.ipv6_cidr_block, 8, each.value)
+    ipv6_cidr_block   = cidrsubnet(aws_vpc.main.ipv6_cidr_block, 8, each.value + 6)
 
     map_public_ip_on_launch = "true" //it makes this a public subnet
     assign_ipv6_address_on_creation = true
@@ -32,12 +32,12 @@ resource "aws_subnet" "subnet_private" {
 
     availability_zone = each.key
     cidr_block        = cidrsubnet(aws_vpc.main.cidr_block, 8, each.value + 10)
-    ipv6_cidr_block   = cidrsubnet(aws_vpc.main.ipv6_cidr_block, 8, each.value + 10)
+    ipv6_cidr_block   = cidrsubnet(aws_vpc.main.ipv6_cidr_block, 8, each.value + 22)
 
     map_public_ip_on_launch = "true" //it makes this a public subnet
 
     tags = {
-        Name = "subnet-public-${each.value + 10}"
+        Name = "subnet-private-${each.value + 10}"
     }
 }
 
