@@ -81,6 +81,7 @@ resource "aws_security_group" "webserver" {
         // Do not do it in the production. 
         // Put your office or home address in it!
         cidr_blocks = ["0.0.0.0/0"]
+        description = "SSH port"
     }
     //If you do not add this rule, you can not reach the NGIX  
     ingress {
@@ -88,12 +89,14 @@ resource "aws_security_group" "webserver" {
         to_port = 80
         protocol = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
+        description = "HTTP port"
     }
     ingress {
         from_port = 443
         to_port = 443
         protocol = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
+        description = "HTTPS port"
     }
     tags = {
         Name = "webserver"
