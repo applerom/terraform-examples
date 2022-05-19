@@ -18,26 +18,6 @@ resource "aws_subnet" "subnet-public-1" {
     }
 }
 
-resource "aws_subnet" "subnet-public-2" {
-    vpc_id = "${aws_vpc.main.id}"
-    cidr_block = var.subnet_public_2_cidr_block
-    map_public_ip_on_launch = "true" //it makes this a public subnet
-    availability_zone = var.subnet_public_2_availability_zone
-    tags = {
-        Name = "subnet-public-2"
-    }
-}
-
-resource "aws_subnet" "subnet-public-3" {
-    vpc_id = "${aws_vpc.main.id}"
-    cidr_block = var.subnet_public_3_cidr_block
-    map_public_ip_on_launch = "true" //it makes this a public subnet
-    availability_zone = var.subnet_public_3_availability_zone
-    tags = {
-        Name = "subnet-public-3"
-    }
-}
-
 resource "aws_internet_gateway" "igw" {
     vpc_id = "${aws_vpc.main.id}"
     tags = {
