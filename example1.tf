@@ -66,6 +66,7 @@ resource "aws_route_table_association" "rta-public-subnet-1"{
 
 resource "aws_security_group" "webserver" {
     vpc_id = "${aws_vpc.main.id}"
+    name = "Webserver"
     
     egress {
         from_port = 0
