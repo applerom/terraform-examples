@@ -49,3 +49,7 @@ variable "web1_key_name" {
 variable "web2_key_name" {
     default = "key123"
 }
+
+variable "web3_key_name" {
+    default = "key123"
+}
