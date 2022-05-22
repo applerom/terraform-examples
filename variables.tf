@@ -61,3 +61,7 @@ variable "web4_key_name" {
 variable "web5_key_name" {
     default = "key123"
 }
+
+variable "web6_key_name" {
+    default = "key123"
+}
