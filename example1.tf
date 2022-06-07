@@ -32,9 +32,9 @@ resource "aws_subnet" "subnet_private" {
 
     availability_zone = each.key
     cidr_block        = cidrsubnet(aws_vpc.main.cidr_block, 8, each.value + 10)
-    ipv6_cidr_block   = cidrsubnet(aws_vpc.main.ipv6_cidr_block, 8, each.value + 22)
+    ipv6_cidr_block   = cidrsubnet(aws_vpc.main.ipv6_cidr_block, 8, each.value + 22) // Зачем это если у нас IPV6 здесь нет?
 
-    map_public_ip_on_launch = "true" //it makes this a public subnet
+    map_public_ip_on_launch = "true" //it makes this a private subnet
 
     tags = {
         Name = "subnet-private-${each.value + 10}"
@@ -146,7 +146,7 @@ resource "aws_security_group" "webserver" {
 #    ami = "${lookup(var.AMI, var.AWS_Region)}"
 #    instance_type = var.instance_type
 #    # VPC
-#    subnet_id = "${aws_subnet.subnet-public-1.id}"
+#    subnet_id = "${aws_subnet.subnet-public.id}"
 #    # Security Group
 #    vpc_security_group_ids = ["${aws_security_group.webserver.id}"]
 #    # the Public SSH key
@@ -157,7 +157,7 @@ resource "aws_security_group" "webserver" {
 #    ami = "${lookup(var.AMI, var.AWS_Region)}"
 #    instance_type = var.instance_type
 #    # VPC
-#    subnet_id = "${aws_subnet.subnet-public-1.id}"
+#    subnet_id = "${aws_subnet.subnet-public.id}"
 #    # Security Group
 #    vpc_security_group_ids = ["${aws_security_group.webserver.id}"]
 #    # the Public SSH key
