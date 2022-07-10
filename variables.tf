@@ -1,4 +1,12 @@
-variable "AMI" {
+variable "AMI-Ubuntu" {
+    type = map
+    default = {
+        eu-central-1 = "ami-07cd3675e7ca644fe"
+        eu-north-1 = "ami-0adfc82c1ad9f327b"
+    }
+}
+
+variable "AMI-AL2" {
     type = map
     default = {
         eu-central-1 = "ami-07cd3675e7ca644fe"
