@@ -10,7 +10,7 @@ resource "aws_kms_key" "this" {
   description             = "${var.name} key"
   deletion_window_in_days = 7
   policy                  = data.aws_iam_policy_document.this.json
-#  enable_key_rotation     = true
+  #enable_key_rotation     = true
 }
 
 ## KMS alias
