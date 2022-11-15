@@ -21,7 +21,7 @@ myprompt()
                 LASTOPER="BAD"
         fi
 
-        HOSTNAME=`hostname`
+        HOSTNAME=$AWS_DEFAULT_REGION # `hostname`
         tput setaf 4 # Set foreground color Blue
         # make flexible padding
         PADDING=`printf "%*s" $(($(tput cols)-24-${#HOSTNAME}-${#USER})) | sed "s| |_|g"`
