@@ -1,5 +1,4 @@
 locals {
-  alias = lower(replace(var.name, " ", "-"))
   accounts = [
     for account in var.accounts : format("arn:aws:iam::%s:root", account)
   ]
@@ -7,7 +6,7 @@ locals {
 
 ## KMS key
 resource "aws_kms_key" "this" {
-  description             = "${var.name} key"
+  description             = var.description
   deletion_window_in_days = 7
   policy                  = data.aws_iam_policy_document.this.json
   #enable_key_rotation     = true
@@ -15,7 +14,7 @@ resource "aws_kms_key" "this" {
 
 ## KMS alias
 resource "aws_kms_alias" "this" {
-  name          = "alias/${local.alias}-key"
+  name          = "alias/${local.name}"
   target_key_id = aws_kms_key.this.key_id
 }
 

@@ -4,7 +4,12 @@ variable "region" {
 }
 
 variable "name" {
-  description = "A name of the KMS key"
+  description = "The name of the KMS key"
+  type        = string
+}
+
+variable "description" {
+  description = "The description of the KMS key"
   type        = string
 }
 
