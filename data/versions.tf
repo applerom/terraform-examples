@@ -16,11 +16,4 @@ terraform {
 
 provider "aws" {
   region  = var.region
-
-  default_tags {
-    tags = {
-      terraform = "true"
-      tf-type   = "tf-backend"
-    }
-  }
 }
