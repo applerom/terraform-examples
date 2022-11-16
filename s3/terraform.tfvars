@@ -6,3 +6,4 @@ name     = "my-bucket" # ! change me !
 
 #sse_algorithm = "aws:kms" # AES256 | aws:kms
 #kms_key_arn = ""
+#bucket_key_enabled = "true"

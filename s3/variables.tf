@@ -32,3 +32,9 @@ variable "kms_key_arn" {
   type        = string
   default     = null ## must be 'null' for AES256
 }
+
+variable "bucket_key_enabled" {
+  description = "The S3 bucket KMS key ARN for default encryption"
+  type        = string
+  default     = null ## must be 'null' for AES256
+}
