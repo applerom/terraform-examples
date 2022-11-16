@@ -6,7 +6,7 @@ locals {
 
 ## KMS key
 resource "aws_kms_key" "this" {
-  description             = var.description
+  description             = coalesce(var.description, var.name)
   deletion_window_in_days = 7
   policy                  = data.aws_iam_policy_document.this.json
   #enable_key_rotation     = true

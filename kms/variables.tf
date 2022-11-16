@@ -11,6 +11,7 @@ variable "name" {
 variable "description" {
   description = "The description of the KMS key"
   type        = string
+  default     = null # It's equal to the name by default
 }
 
 ## optional
