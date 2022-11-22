@@ -11,15 +11,10 @@ provider "aws" {
 
 ## main configuration
 locals {
-  region     = "us-east-1"
-  vpc_name   = "Vpc4"
-  vpc_prefix = "10.40"
-  public_suffix  = "Public"
-  private_suffix = "Private App"
-  intra_suffix   = "Intra DB"
-  public_name  = "${local.vpc_name} ${local.public_suffix}"
-  private_name = "${local.vpc_name} ${local.private_suffix}"
-  intra_name   = "${local.vpc_name} ${local.intra_suffix}"
+  region = "us-east-1"
+  name = "Vpc2"
+  az_count = 3
+  cidr_block = "10.42.0.0/16"
 }
 
 ## get availability zones except very old in N.Virginia to avoid problems with EKS etc
@@ -29,127 +24,174 @@ data "aws_availability_zones" "azs" {
 }
 
 ## VPC
-module "vpc" {
-  source = "terraform-aws-modules/vpc/aws"
+resource "aws_vpc" "this" {
+  cidr_block = local.cidr_block
+  assign_generated_ipv6_cidr_block = true
 
-  name = local.vpc_name
-  cidr = "${local.vpc_prefix}.0.0/16"
+  tags = {
+    Name = local.name
+    type = "devops"
+  }
+}
 
-  azs = [data.aws_availability_zones.azs.names[0], data.aws_availability_zones.azs.names[1], data.aws_availability_zones.azs.names[2]]
-  public_subnets  = ["${local.vpc_prefix}.11.0/24", "${local.vpc_prefix}.12.0/24", "${local.vpc_prefix}.13.0/24"]
-  private_subnets = ["${local.vpc_prefix}.21.0/24", "${local.vpc_prefix}.22.0/24", "${local.vpc_prefix}.23.0/24"]
-  intra_subnets   = ["${local.vpc_prefix}.31.0/24", "${local.vpc_prefix}.32.0/24", "${local.vpc_prefix}.33.0/24"]
- 
-  public_subnet_names  = ["${local.public_name} A",  "${local.public_name} B",  "${local.public_name} C"]
-  private_subnet_names = ["${local.private_name} A", "${local.private_name} B", "${local.private_name} C"]
-  intra_subnet_names   = ["${local.intra_name} A",   "${local.intra_name} B",   "${local.intra_name} C"]
- 
-  enable_nat_gateway     = true
-  single_nat_gateway     = true
-  one_nat_gateway_per_az = false
+## Public subnets
+resource "aws_subnet" "public" {
+  count = local.az_count
 
-  ## for thouse who prefer the default suffix instead of full tags (and uses only lowercase letters and dashes)
-  #public_subnet_suffix  = lower(replace(local.public_name, " ", "-"))
-  #private_subnet_suffix = lower(replace(local.private_name, " ", "-"))
-  #intra_subnet_suffix   = lower(replace(local.intra_name, " ", "-"))
+  vpc_id = aws_vpc.this.id
 
-  enable_ipv6 = true
+  availability_zone = data.aws_availability_zones.azs.names[count.index]
+  cidr_block        = cidrsubnet(aws_vpc.this.cidr_block, 8, count.index + 11)
+  ipv6_cidr_block   = cidrsubnet(aws_vpc.this.ipv6_cidr_block, 8, count.index + 17)
+
+  map_public_ip_on_launch         = true //it makes this a public subnet
   assign_ipv6_address_on_creation = true
 
-  public_subnet_ipv6_prefixes  = [17, 18, 19] # 11, 12, 13 in hex
-  private_subnet_ipv6_prefixes = [33, 34, 35] # 21, 22, 23 in hex
-  intra_subnet_ipv6_prefixes   = [49, 50, 51] # 31, 32, 33 in hex
-
-  public_route_table_tags = {
-    Name = local.public_name
+  tags = {
+      Name = "${local.name} Public ${upper(substr(data.aws_availability_zones.azs.names[count.index], -1, 1))}"
+      #"kubernetes.io/cluster/${local.cluster_name}" = "shared"
+      "kubernetes.io/role/elb" = "1"
   }
-  private_route_table_tags = {
-    Name = local.private_name
-  }
-  intra_route_table_tags = {
-    Name = local.intra_name
-  }
-  public_subnet_tags = {
-    "kubernetes.io/role/elb" = "1"
-  }
-  private_subnet_tags = {
-    "kubernetes.io/role/internal-elb" = "1"
-  }
-
 }
 
-locals {
-  ## vpc_flow_logs_s3_bucket_name should be unique
-  vpc_flow_logs_s3_bucket_name = "${lower(local.vpc_name)}-flow-logs-${data.aws_caller_identity.current.account_id}"
+## Private subnets
+resource "aws_subnet" "private" {
+  count = local.az_count
+
+  vpc_id = aws_vpc.this.id
+
+  availability_zone = data.aws_availability_zones.azs.names[count.index]
+  cidr_block        = cidrsubnet(aws_vpc.this.cidr_block, 8, count.index + 21)
+  ipv6_cidr_block   = cidrsubnet(aws_vpc.this.ipv6_cidr_block, 8, count.index + 33)
+
+  assign_ipv6_address_on_creation = true
+
+  tags = {
+      Name = "${local.name} Private App ${upper(substr(data.aws_availability_zones.azs.names[count.index], -1, 1))}"
+      #"kubernetes.io/cluster/${local.cluster_name}" = "shared"
+      "kubernetes.io/role/internal-elb" = "1"
+  }
 }
 
-## get current AWS account ID - data.aws_caller_identity.current.account_id
-data "aws_caller_identity" "current" {}
+## Internet gateway
+resource "aws_internet_gateway" "this" {
+  depends_on = [aws_vpc.this]
+  vpc_id = aws_vpc.this.id
 
-# S3 bucket for VPC flow logs
-module "vpc_flow_logs_s3_bucket" {
-  source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "~> 3.0"
-
-  bucket        = local.vpc_flow_logs_s3_bucket_name
-  policy        = data.aws_iam_policy_document.vpc_flow_logs.json
-
-  # S3 bucket-level Public Access Block configuration
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-
-  object_ownership = "BucketOwnerEnforced"
-
-  server_side_encryption_configuration = {
-    rule = {
-      apply_server_side_encryption_by_default = {
-        sse_algorithm = "AES256"
-      }
-    }
+  tags = {
+      Name = local.name
   }
-  lifecycle_rule = [
-    {
-      id      = "vpc-flow-logs"
-      enabled = true
+}
 
-      filter = {
-        prefix = "/"
-      }
+## Public route table with routes
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.this.id
 
-      expiration = {
-        days = 90
-      }
-    }
+  route {
+      ipv6_cidr_block = "::/0"
+      gateway_id = aws_internet_gateway.this.id
+  }
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.this.id
+  }
+
+  tags = {
+      Name = "${local.name} Public"
+  }
+}
+
+## Public route table assotiations
+resource "aws_route_table_association" "public"{
+  count = local.az_count
+
+  subnet_id      = aws_subnet.public[count.index].id
+  route_table_id = aws_route_table.public.id
+}
+
+## Elastic IP for NAT Gateway
+resource "aws_eip" "this" {
+  vpc = true
+
+  tags = {
+    Name = local.name
+  }
+}
+
+## NAT Gateway
+resource "aws_nat_gateway" "this" {
+  depends_on = [
+    aws_internet_gateway.this,
+    aws_eip.this,
   ]
+  ## count         = local.nat_gw_count
+  ## allocation_id = aws_eip.this[count.index].id
+  ## subnet_id     = element(aws_subnet.public[*].id, count.index)
+  ## use only one nat_gw
+  allocation_id = aws_eip.this.id
+  subnet_id     = aws_subnet.private[0].id
+
+  tags = {
+    #Name = "${local.name} ${count.index + 1}"
+    Name = local.name
+  }
 }
 
-## S3 bucket policy for VPC flow logs
-data "aws_iam_policy_document" "vpc_flow_logs" {
-  statement {
-    sid = "AWSLogDeliveryWrite"
+## Egress only internet gateway for IPv6 private subnets
+resource "aws_egress_only_internet_gateway" "this" {
+  depends_on = [aws_vpc.this]
+  vpc_id = aws_vpc.this.id
 
-    principals {
-      type        = "Service"
-      identifiers = ["delivery.logs.amazonaws.com"]
-    }
+  tags = {
+    Name = local.name
+  }
+}
 
-    actions = ["s3:PutObject"]
+## Private route table with routes
+resource "aws_route_table" "private" {
+  depends_on = [aws_vpc.this]
+  vpc_id = aws_vpc.this.id
 
-    resources = ["arn:aws:s3:::${local.vpc_flow_logs_s3_bucket_name}/AWSLogs/*"]
+  route {
+      ipv6_cidr_block = "::/0"
+      gateway_id = aws_egress_only_internet_gateway.this.id
+  }
+  route {
+      cidr_block = "0.0.0.0/0"
+      gateway_id = aws_nat_gateway.this.id
   }
 
-  statement {
-    sid = "AWSLogDeliveryAclCheck"
+  tags = {
+      Name = "${local.name} Private App"
+  }
+}
 
-    principals {
-      type        = "Service"
-      identifiers = ["delivery.logs.amazonaws.com"]
-    }
+## Private route table assotiations
+resource "aws_route_table_association" "private"{
+  count = local.az_count
 
-    actions = ["s3:GetBucketAcl"]
+  subnet_id      = aws_subnet.private[count.index].id
+  route_table_id = aws_route_table.private.id
+}
 
-    resources = ["arn:aws:s3:::${local.vpc_flow_logs_s3_bucket_name}"]
+## VPC Endpoint for S3. Type - gateway so it's free.
+resource "aws_vpc_endpoint" "s3" {
+  service_name    = "com.amazonaws.${local.region}.s3"
+  vpc_id          = aws_vpc.this.id
+  route_table_ids = compact(concat(aws_route_table.private.*.id, aws_route_table.public.*.id))
+
+  tags = {
+      Name = "${local.name} S3"
+  }
+}
+
+## VPC Endpoint for DynamoDB. Type - gateway so it's free.
+resource "aws_vpc_endpoint" "dynamodb" {
+  service_name    = "com.amazonaws.${local.region}.dynamodb"
+  vpc_id          = aws_vpc.this.id
+  route_table_ids = compact(concat(aws_route_table.private.*.id, aws_route_table.public.*.id))
+
+  tags = {
+      Name = "${local.name} DynamoDB"
   }
 }
