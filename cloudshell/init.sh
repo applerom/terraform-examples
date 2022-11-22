@@ -10,5 +10,5 @@ mkdir ~/bin
 echo "copy terraform to ~/bin because only the files in home folder remain after the session ends"
 cp /usr/bin/terraform ~/bin
 echo "customize ~/.bashrc - making the cloudshell interface beautiful"
-cp cloudshell.bashrc ~/.bashrc
+cp .bashrc ~/.bashrc
 . ~/.bashrc
