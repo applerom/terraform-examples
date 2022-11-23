@@ -2,6 +2,11 @@
 
 ## Amazon S3
 
+### Create variables file
+```shell
+echo "name = change_me" >> terraform.tfvars
+```
+
 Using file my.tfvars:
 ```shell
 tf apply -var-file my.tfvars

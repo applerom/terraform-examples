@@ -16,6 +16,18 @@ variable "description" {
   default     = null # It's equal to the name by default
 }
 
+variable "deletion_window_in_days" {
+  description = "Enable KMS key rotation"
+  type        = number
+  default     = 7
+}
+
+variable "enable_key_rotation" {
+  description = "Enable KMS key rotation"
+  type        = bool
+  default     = false
+}
+
 ## optional
 variable "accounts" {
   description = "AWS accounts to share the KMS key"
