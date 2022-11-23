@@ -2,7 +2,7 @@
 
 ## Amazon S3
 
-Using file wi.tfvars:
+Using file my.tfvars:
 ```shell
 tf apply -var-file my.tfvars
 ```
@@ -28,6 +28,26 @@ Using terraform.tfvars:
 accounts = ["012345678901","123456789010"]
 ```
 
+### Create state file
+```shell
+cp versions.tf state.tf
+```
+* Configure bucket and dynamodb_table to their own values.
+* Uncomment and specify kms_key_id, if you have one, or you will only have SSL S3 encryption.
+state.tf:
+```hcl
+terraform {
+  backend "s3" {
+    bucket         = "tf-state-my"
+    dynamodb_table = "tf-state-my-lock"
+    key            = "iam.tfstate"
+    region         = "us-east-1"
+    encrypt        = "true"
+    #kms_key_id     = "arn:aws:kms:us-east-1:000000000000:key/00000000-0000-0000-0000-000000000000"
+  }
+}
+```
+
 
 ## AWS KMS
 
@@ -41,7 +61,7 @@ accounts = ["012345678901","123456789010"]
 ```
 
 
-## Global data confoguration
+## Global data configuration
 
 ### Add AWS accounts 012345678901 and 123456789010 to share this KMS
 ```shell

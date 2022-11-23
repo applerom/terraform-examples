@@ -9,7 +9,7 @@ terraform {
   #backend "s3" {
   #  bucket         = "tf-state-myproject"
   #  dynamodb_table = "tf-state-myproject-lock"
-  #  key            = "s3.tfstate"
+  #  key            = "vpc.tfstate"
   #  region         = "us-east-1"
   #  encrypt        = "true"
   ##  kms_key_id     = "arn:aws:kms:us-east-1:000000000000:key/00000000-0000-0000-0000-000000000000"
@@ -18,7 +18,6 @@ terraform {
 
 provider "aws" {
   region  = var.region
-  #profile = "some-profile"
 
   default_tags {
     tags = {
@@ -26,8 +25,3 @@ provider "aws" {
     }
   }
 }
-
-#provider "aws" {
-#  alias  = "dev"
-#  profile = "dev"
-#}

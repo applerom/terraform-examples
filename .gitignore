@@ -1,5 +1,8 @@
-# Terraform variable files
+# Terraform variables file (specially for this project - customize according to your needs)
 terraform.tfvars
+
+# Terraform state file (specially for this project - customize according to your needs)
+state.tf
 
 # Terraform dot files
 .terraform
