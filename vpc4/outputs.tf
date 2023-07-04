@@ -1,16 +1,16 @@
 output "vpc_id" {
   description = "The ID of the VPC"
-  value       = aws_vpc.this.id
+  value       = aws_vpc.this.vpc_id
 }
 
 output "vpc_arn" {
   description = "The Amazon Resource Name (ARN) of the VPC"
-  value       = aws_vpc.this.arn
+  value       = aws_vpc.this.vpc_arn
 }
 
 output "vpc_cidr_block" {
-  description = "The CIDR block of the VPC"
-  value       = aws_vpc.this.cidr_block
+  description = "IPv4 CIDR block of the VPC"
+  value       = aws_vpc.this.vpc_cidr_block
 }
 
 output "default_security_group_id" {
@@ -30,22 +30,22 @@ output "default_route_table_id" {
 
 output "vpc_main_route_table_id" {
   description = "The ID of the main route table associated with this VPC"
-  value       = aws_vpc.this.main_route_table_id
+  value       = aws_vpc.this.vpc_main_route_table_id
 }
 
 output "vpc_ipv6_association_id" {
   description = "The association ID for the IPv6 CIDR block"
-  value       = aws_vpc.this.ipv6_association_id
+  value       = aws_vpc.this.vpc_ipv6_association_id
 }
 
 output "vpc_ipv6_cidr_block" {
-  description = "The IPv6 CIDR block"
-  value       = aws_vpc.this.ipv6_cidr_block
+  description = "IPv6 CIDR block"
+  value       = aws_vpc.this.vpc_ipv6_cidr_block
 }
 
 output "vpc_owner_id" {
   description = "The ID of the AWS account that owns the VPC"
-  value       = aws_vpc.this.owner_id
+  value       = aws_vpc.this.vpc_owner_id
 }
 
 output "public_subnets" {
