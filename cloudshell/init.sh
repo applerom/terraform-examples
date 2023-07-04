@@ -12,3 +12,6 @@ cp /usr/bin/terraform ~/bin
 echo "customize ~/.bashrc - making the cloudshell interface beautiful"
 cp .bashrc ~/.bashrc
 . ~/.bashrc
+echo "create ~/.terraform.d and ~/.terraformrc for caching providers"
+mkdir ~/.terraform.d
+echo 'plugin_cache_dir = "$HOME/.terraform.d/plugin-cache"' > ~/.terraformrc
