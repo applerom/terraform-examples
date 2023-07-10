@@ -1,5 +1,17 @@
 #!/bin/sh
 
+## git clone -b develop https://github.com/applerom/terraform-examples
+## cd terraform-examples/cloudshell
+## chmod +x init.sh
+## ./init.sh
+## . ~/.bashrc
+
+## cd ../iam
+## echo 'accounts=["917902836630"]' > terraform.tfvars
+## tf init
+## tf plan
+## tf apply --auto-approve
+
 ## install Terraform to Amazon Linux 2
 sudo yum install -y yum-utils
 sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
